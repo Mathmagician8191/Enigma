@@ -1,0 +1,11 @@
+{
+  "plaintext" : "lorem ipsum",
+  "reflector" : "B",
+  "plugboard" : "",
+  "rotors" : [
+    ["I", "a", "a"],
+    ["II", "a", "a"],
+    ["III", "a", "u"],
+  ],
+  "result" : "odkzy bkqkr",
+}

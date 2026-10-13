@@ -1,0 +1,12 @@
+{
+  "plaintext" : "aaaaa",
+  "reflector" : "B",
+  "plugboard" : "",
+  // rotor name, ring, position
+  "rotors" : [
+    ["I", "a", "a"],
+    ["II", "a", "a"],
+    ["III", "a", "a"],
+  ],
+  "result" : "bdzgo",
+}

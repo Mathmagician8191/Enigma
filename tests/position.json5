@@ -1,0 +1,11 @@
+{
+  "plaintext" : "aaaaa",
+  "reflector" : "B",
+  "plugboard" : "",
+  "rotors" : [
+    ["I", "a", "b"],
+    ["II", "a", "b"],
+    ["III", "a", "b"],
+  ],
+  "result" : "pgqpw",
+}
