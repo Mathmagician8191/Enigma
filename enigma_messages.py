@@ -8,17 +8,24 @@ def chunks(lst, n):
   for i in range(0, len(lst), n):
     yield lst[i:i + n]
 
+options = {}
+
+for x in argv:
+  if "=" in x:
+    key, value = x.split("=")
+    options[key] = value
+
 if "decrypt" in argv:
   message = input("Message to decrypt: ").strip()
   metadata, ciphertext = message.split(" | ")
   time, length, key = metadata.split(" = ")
   assert int(length) == len(ciphertext.replace(" ", "")), "Corrupted message - failed length check"
   date, time = time.split(" ")
-  initial_key, actual_key = key.split(" ")
+  key_sections = key.split(" ")
   
   current_date = datetime.datetime.now()
-  year = input("Enter message year (if not current): ") or current_date.year
-  month = input("Enter message month (if not current): ") or current_date.month
+  year = options["year"] if "year" in options else current_date.year
+  month = options["month"] if "month" in options else current_date.month
   codesheet_path = f"codesheets/codesheet_{month}_{year}.csv"
   try:
     with open(codesheet_path) as file:
@@ -47,22 +54,30 @@ if "decrypt" in argv:
   rotors = rotors.split(" ")
   rings = rings.split(" ")
 
+  double_step = False
+  if len(key_sections) == 2:
+    initial_key, actual_key = key_sections
+    double_step = True
+  else: initial_key = key_sections[0]
+
   rotor_settings = []
   for rotor, ring, position in zip(rotors, rings, initial_key, strict=True):
     rotor_settings.append([rotor, ring, position])
 
   data = {
     "plaintext" : ciphertext.lower(),
-    "key" : actual_key,
     "reflector" : "B",
     "plugboard" : plugboard,
     "rotors" : rotor_settings,
     "decrypt" : True,
   }
 
-  plaintext = enigma.encode_enigma(data).upper()
+  if double_step:
+    data["key"] = actual_key
+  else:
+    data["actual_key"] = initial_key
 
-  print(data['actual_key'], actual_key)
+  plaintext = enigma.encode_enigma(data).upper()
 
   print(f"{year}-{month}-{day} {time} {data['actual_key']} - {plaintext}")
 else:
