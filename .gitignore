@@ -1,3 +1,5 @@
 __pycache__
 codesheets
 messages
+rust/target
+rust/Cargo.lock
