@@ -17,7 +17,6 @@ pub(crate) fn build_rotor_map() -> RotorMap {
   let mut rotor_map = HashMap::new();
   for (key, data) in raw_rotor_map {
     let (rotor, rotate_positions) = data;
-    // let rotor = [encode[char] for char in rotor.lower()]
     let rotor: [u8; 26] = rotor
       .to_ascii_lowercase()
       .chars()
