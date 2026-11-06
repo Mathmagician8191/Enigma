@@ -1,6 +1,4 @@
-An implementation of the German Enigma M3
-
-Support for the M4 is planned
+An implementation of the German Enigma M3 & M4
 
 Includes functionality to use a shared codebook to encrypt and decrypt messages, prepending the required decryption metadata to the ciphertext
 

@@ -63,7 +63,7 @@ def compile_rotors(rotors):
   return result
 
 def compile_plugboard(plugboard):
-  result = {i: i for i in range(26)}
+  result = list(range(26))
   for plug in plugboard.lower().split(" "):
     if plug:
       a, b = [encode[char] for char in plug]
@@ -105,11 +105,23 @@ def encrypt_enigma(plaintext, rotors, reflector, plugboard):
     else: ciphertext += letter
   return ciphertext
 
+def compile_reflector(reflector, rotor=None):
+  if rotor:
+    reflector = reflectors[reflector]
+    plugboard = list(range(26))
+    return [path(i, [rotor], reflector, plugboard) for i in range(26)]
+  else: return reflectors[reflector]
+
 def encode_enigma(test_data):
   plaintext = test_data["plaintext"]
-  rotors = compile_rotors(test_data["rotors"])
   plugboard = compile_plugboard(test_data["plugboard"])
-  reflector = reflectors[test_data["reflector"]]
+  rotors = compile_rotors(test_data["rotors"])
+  m4 = "mode" in test_data and test_data["mode"] == "m4"
+  if m4:
+    rotor, *rotors = rotors
+  else:
+    rotor = None
+  reflector = compile_reflector(test_data["reflector"], rotor)
   assert all([i != reflector[i] for i in range(26)])
   assert all([i == reflector[reflector[i]] for i in range(26)])
   if "key" in test_data:
@@ -119,7 +131,11 @@ def encode_enigma(test_data):
       actual_key = key
     else:
       actual_key = test_data["key"].lower()
-    assert len(key) == len(rotors), "Invalid key length"
+    if m4:
+      reflector_position, *actual_key = actual_key
+      rotor[-1] = encode[reflector_position]
+      reflector = compile_reflector(test_data["reflector"], rotor)
+    assert len(actual_key) == len(rotors), "Invalid key length"
     for i, letter in enumerate(actual_key):
       rotors[i][-1] = encode[letter]
     return encrypt_enigma(plaintext, rotors, reflector, plugboard)

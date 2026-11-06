@@ -15,6 +15,10 @@ for x in argv:
     key, value = x.split("=")
     options[key] = value
 
+m4 = "M4" in argv
+mode = 4 if m4 else 3
+reflector = "b" if m4 else "B"
+
 if "decrypt" in argv:
   message = input("Message to decrypt: ").strip()
   metadata, ciphertext = message.split(" | ")
@@ -26,7 +30,7 @@ if "decrypt" in argv:
   current_date = datetime.datetime.now()
   year = options["year"] if "year" in options else current_date.year
   month = options["month"] if "month" in options else current_date.month
-  codesheet_path = f"codesheets/codesheet_{month}_{year}.csv"
+  codesheet_path = f"codesheets/codesheet_{month}_{year}_M{mode}.csv"
   try:
     with open(codesheet_path) as file:
       codesheet_data = file.readlines()
@@ -66,7 +70,7 @@ if "decrypt" in argv:
 
   data = {
     "plaintext" : ciphertext.lower(),
-    "reflector" : "B",
+    "reflector" : reflector,
     "plugboard" : plugboard,
     "rotors" : rotor_settings,
     "decrypt" : True,
@@ -77,6 +81,9 @@ if "decrypt" in argv:
   else:
     data["actual_key"] = initial_key
 
+  if m4:
+    data["mode"] = "m4"
+
   plaintext = enigma.encode_enigma(data).upper()
 
   print(f"{year}-{month}-{day} {time} {data['actual_key']} - {plaintext}")
@@ -84,7 +91,7 @@ else:
   import random
 
   time = datetime.datetime.now()
-  codesheet_path = f"codesheets/codesheet_{time.month}_{time.year}.csv"
+  codesheet_path = f"codesheets/codesheet_{time.month}_{time.year}_M{mode}.csv"
   try:
     with open(codesheet_path) as file:
       codesheet_data = file.readlines()
@@ -121,7 +128,7 @@ else:
   plaintext = input("Message to encrypt: ").replace(" ", "")
   initial_key = ""
   actual_key = ""
-  for _ in range(3):
+  for _ in range(mode):
     initial_key += random.choice(ascii_uppercase)
     actual_key += random.choice(ascii_uppercase)
 
@@ -132,10 +139,13 @@ else:
   data = {
     "plaintext" : plaintext.lower(),
     "key" : actual_key,
-    "reflector" : "B",
+    "reflector" : reflector,
     "plugboard" : plugboard,
     "rotors" : rotor_settings,
   }
+
+  if m4:
+    data["mode"] = "m4"
 
   ciphertext = enigma.encode_enigma(data).upper()
 
